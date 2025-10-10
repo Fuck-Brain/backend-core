@@ -1,0 +1,32 @@
+using System.Net;
+using MediatR;
+using Pepegov.MicroserviceFramework.ApiResults;
+using ProfileCore.Application.Query;
+using ProfileCore.Application.Services.Interfaces;
+using ProfileCore.Infrastructure.Exceptions;
+
+namespace ProfileCore.Application.Handler
+{
+    public class OrderGetTotalPriceRequestHandler : IRequestHandler<OrderGetTotalPriceRequest, ApiResult<decimal>>
+    {
+        private readonly IOrderService _orderService;
+
+        public OrderGetTotalPriceRequestHandler(IOrderService orderService)
+        {
+            _orderService = orderService;
+        }
+
+        public async Task<ApiResult<decimal>> Handle(OrderGetTotalPriceRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderByIdAsync(request.Id, cancellationToken);
+                return new ApiResult<decimal>(order.GetTotalPrice(), HttpStatusCode.OK);
+            }
+            catch (NotFoundException exception)
+            {
+                return new ApiResult<decimal>(HttpStatusCode.NotFound, exception);
+            }
+        }
+    }
+}
