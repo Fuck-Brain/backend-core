@@ -24,8 +24,4 @@
       <PackageReference Include="Pepegov.UnitOfWork.EntityFramework" Version="1.4.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Database\Migrations\" />
-    </ItemGroup>
-
 </Project>

@@ -3,7 +3,7 @@ using Pepegov.MicroserviceFramework.Definition.Context;
 using Pepegov.UnitOfWork;
 using Pepegov.UnitOfWork.EntityFramework.Configuration;
 using ProfileCore.Application;
-using ProfileCore.Application.Database;
+using ProfileCore.Infrastructure.Database;
 
 namespace ProfileCore.UI.Api.Definitions.UnitOfWork
 {

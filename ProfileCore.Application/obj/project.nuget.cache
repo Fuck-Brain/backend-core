@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LwbynmN/WWc=",
+  "dgSpecHash": "xRRfBTdxIu8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Fomka\\Desktop\\backend-core\\ProfileCore\\ProfileCore.Application\\ProfileCore.Application.csproj",
+  "projectFilePath": "C:\\Users\\Fomka\\Desktop\\backend-core\\ProfileCore.Application\\ProfileCore.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Fomka\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\Fomka\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

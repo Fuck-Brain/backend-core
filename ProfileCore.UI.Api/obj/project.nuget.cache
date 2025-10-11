@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lKcsOWQ+QCQ=",
+  "dgSpecHash": "suacUZLihWk=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Fomka\\Desktop\\backend-core\\ProfileCore\\ProfileCore.UI.Api\\ProfileCore.UI.Api.csproj",
+  "projectFilePath": "C:\\Users\\Fomka\\Desktop\\backend-core\\ProfileCore.UI.Api\\ProfileCore.UI.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Fomka\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\Fomka\\.nuget\\packages\\fluentvalidation\\11.7.1\\fluentvalidation.11.7.1.nupkg.sha512",

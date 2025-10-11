@@ -1,7 +1,16 @@
+bin/
+obj/
+Debug/
+Release/
+out/
+publish/
+
+# Rider / VSCode / VS cache
+.vs/
 # =========================
 # IDE / Editor
 # =========================
-.vs/
+.vs
 *.suo
 *.user
 *.userosscache

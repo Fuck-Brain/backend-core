@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0kaRE6g3iiQ=",
+  "dgSpecHash": "UuIUqADU1ro=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Fomka\\Desktop\\backend-core\\ProfileCore\\ProfileCore.Infrastructure\\ProfileCore.Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\Fomka\\Desktop\\backend-core\\ProfileCore.Infrastructure\\ProfileCore.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Fomka\\.nuget\\packages\\microsoft.entityframeworkcore\\8.0.7\\microsoft.entityframeworkcore.8.0.7.nupkg.sha512",
     "C:\\Users\\Fomka\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\8.0.7\\microsoft.entityframeworkcore.abstractions.8.0.7.nupkg.sha512",
