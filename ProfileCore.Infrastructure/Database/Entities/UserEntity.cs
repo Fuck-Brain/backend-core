@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProfileCore.Infrastructure.Database.Entities
 {
-    internal class UserEntity : IAuditable
+    public class UserEntity : IAuditable
     {
         public Guid Id { get; set; }
         public string Email { get; set; }

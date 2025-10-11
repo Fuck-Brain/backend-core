@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProfileCore.Domain.Entity
 {
-    internal class Plugin
+    public class Plugin
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

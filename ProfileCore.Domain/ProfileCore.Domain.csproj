@@ -6,8 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\ProfileCore.Infrastructure\ProfileCore.Infrastructure.csproj" />
-    </ItemGroup>
-
 </Project>

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ProfileCore.Domain.Aggregate;
 
-namespace ProfileCore.Application.Services.Interfaces.IRepository
+namespace ProfileCore.Domain.IRepository
 {
     public interface ICompanyRepository
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProfileCore.Infrastructure.Database.Entities
 {
-    internal class PluginEntity : IAuditable
+    public class PluginEntity : IAuditable
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

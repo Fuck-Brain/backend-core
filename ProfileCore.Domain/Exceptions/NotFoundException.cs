@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace ProfileCore.Infrastructure.Exceptions
+namespace ProfileCore.Domain.Exceptions
 {
     [Serializable]
     public class NotFoundException : Exception

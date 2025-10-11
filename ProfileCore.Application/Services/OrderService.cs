@@ -3,7 +3,7 @@ using Pepegov.UnitOfWork;
 using Pepegov.UnitOfWork.EntityFramework;
 using ProfileCore.Application.Services.Interfaces;
 using ProfileCore.Domain.Aggregate;
-using ProfileCore.Infrastructure.Exceptions;
+using ProfileCore.Domain.Exceptions;
 
 namespace ProfileCore.Application.Services
 {

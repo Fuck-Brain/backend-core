@@ -3,7 +3,7 @@ using MediatR;
 using Pepegov.MicroserviceFramework.ApiResults;
 using ProfileCore.Application.Query;
 using ProfileCore.Application.Services.Interfaces;
-using ProfileCore.Infrastructure.Exceptions;
+using ProfileCore.Domain.Exceptions;
 
 namespace ProfileCore.Application.Handler
 {

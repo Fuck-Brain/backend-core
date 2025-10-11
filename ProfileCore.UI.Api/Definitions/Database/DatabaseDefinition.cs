@@ -23,6 +23,7 @@ namespace ProfileCore.UI.Api.Definitions.Database
                 //TODO: change your db provider 
                 options.UseNpgsql(connectionString,
                     b => b.MigrationsAssembly(migrationsAssembly)));
+           
 
             return base.ConfigureServicesAsync(context);
         }

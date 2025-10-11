@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProfileCore.Application.Services.Interfaces.IRepository
+namespace ProfileCore.Domain.IRepository
 {
     public interface IPluginRepository
     {
