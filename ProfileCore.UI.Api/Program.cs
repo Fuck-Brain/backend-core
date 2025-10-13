@@ -1,59 +1,79 @@
 using Microsoft.IdentityModel.Logging;
+using Microsoft.AspNetCore.OpenApi;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
+using Pepegov.MicroserviceFramework.Definition;
+using ProfileCore.UI.Api.EndPoints;
 using Serilog;
 using Serilog.Events;
 
-try
+//Configure logging
+Log.Logger = new LoggerConfiguration()
+	.MinimumLevel.Debug()
+	.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+	.Enrich.FromLogContext()
+	.WriteTo.Console()
+	.CreateLogger();
+
+//Create builder
+var builder = WebApplication.CreateBuilder(args);
+
+//Host logging  
+builder.Host.UseSerilog((ctx, services, cfg) => cfg
+	.ReadFrom.Configuration(ctx.Configuration)
+	.ReadFrom.Services(services)
+	.Enrich.FromLogContext()
+	.WriteTo.Console()
+);
+	
+// Controllers
+builder.Services.AddProblemDetails();
+	
+// Open API
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+//Add definitions
+var assembly = typeof(Program).Assembly;
+await builder.AddApplicationDefinitions(assembly);
+	
+// Health checks
+builder.Services.AddHealthChecks();
+	
+//Create web application
+var app = builder.Build();
+	
+app.UseExceptionHandler();
+	
+//Use definitions
+await app.UseApplicationDefinitions();
+
+//Use logging
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
 {
-    //Configure logging
-    Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Debug()
-        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-        .Enrich.FromLogContext()
-        .WriteTo.Console()
-        .CreateLogger();
-
-    //Create builder
-    var builder = WebApplication.CreateBuilder(args);
-
-    //Host logging  
-    builder.Host.UseSerilog((context, configuration) =>
-        configuration.ReadFrom.Configuration(context.Configuration));
-
-    //Add definitions
-    var assembly = typeof(Program).Assembly;
-    await builder.AddApplicationDefinitions(assembly);
-
-    //Create web application
-    var app = builder.Build();
-
-    //Use definitions
-    await app.UseApplicationDefinitions();
-
-    //Use logging
-    if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
-    {
-        IdentityModelEventSource.ShowPII = true;
-    }
-    app.UseSerilogRequestLogging();
-
-    //Run app
-    await app.RunAsync();
-
-    return 0;
+	IdentityModelEventSource.ShowPII = true;
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
-catch (Exception ex)
-{
-    var type = ex.GetType().Name;
-    if (type.Equals("HostAbortedException", StringComparison.Ordinal))
-    {
-        throw;
-    }
+app.UseSerilogRequestLogging();
+	
+app.UseExceptionHandler(errorApp => 
+	errorApp.Run(async context =>
+	{
+		await Results.Problem().ExecuteAsync(context);
+	}));
 
-    Log.Fatal(ex, "Unhandled exception");
-    return 1;
-}
-finally
-{
-    await Log.CloseAndFlushAsync();
-}
+var api = app.MapGroup("/api");
+
+api.MapGroup("/auth").MapAuthEndpoints();
+api.MapGroup("/profile").MapProfileEndpoints();
+api.MapGroup("/companies").MapCompanyEndpoints();
+
+app.MapHealthChecks("/health");
+app.MapGet("/throw", (_) => throw new Exception("Test exception"));
+
+//Run app
+await app.RunAsync();
+
+await Log.CloseAndFlushAsync();
+	
+return 0;
