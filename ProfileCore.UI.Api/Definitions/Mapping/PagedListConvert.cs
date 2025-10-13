@@ -1,5 +1,6 @@
 using AutoMapper;
 using Pepegov.UnitOfWork.Entityes;
+using ProfileCore.Domain.Entity;
 
 namespace ProfileCore.UI.Api.Definitions.Mapping
 {

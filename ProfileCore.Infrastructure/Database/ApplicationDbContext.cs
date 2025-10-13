@@ -10,10 +10,10 @@ namespace ProfileCore.Infrastructure.Database
 {
     public class ApplicationDbContext : DbContext
     {
-        DbSet<UserEntity> users;
-        DbSet<EmployeeEntity> employees;
-        DbSet<CompanyEntity> companies;
-        DbSet<PluginEntity> plugins;
+        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<EmployeeEntity> Employees { get; set; }
+        public DbSet<CompanyEntity> Companies { get; set; }
+        public DbSet<PluginEntity> plugins { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
