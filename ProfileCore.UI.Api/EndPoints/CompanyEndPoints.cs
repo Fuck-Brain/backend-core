@@ -3,6 +3,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProfileCore.UI.Api.DTOs;
+using AutoMapper;
+using ProfileCore.Application.Commands.Company;
+using ProfileCore.Application.Queries.Company;
 
 namespace ProfileCore.UI.Api.EndPoints;
 
@@ -25,28 +28,17 @@ public static class CompanyEndpoints
     private static async Task<IResult> List(
         IMediator mediator,
         ILoggerFactory lf,
+        IMapper mapper,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Companies");
 
         try
         {
-            // TODO: mediator.Send(new GetAllCompaniesQuery(), ct);
+            var companies = await mediator.Send(new QueryAllCompanies(), ct);
             logger.LogInformation("Stub: Get all companies");
 
-            var stub = new[]
-            {
-                new CompanyDto(
-                    Guid.NewGuid(),
-                    "TechCore",
-                    Guid.NewGuid(),
-                    "Иван Иванов",
-                    new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
-                    new List<Guid> { Guid.NewGuid() }
-                )
-            };
-
-            return Results.Ok(stub);
+            return Results.Ok(mapper.Map<List<ProfileCore.UI.Api.DTOs.CompanyDto>>(companies));
         }
         catch (Exception ex)
         {
@@ -62,25 +54,17 @@ public static class CompanyEndpoints
         Guid id,
         IMediator mediator,
         ILoggerFactory lf,
+        IMapper mapper,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Companies");
 
         try
         {
-            // TODO: mediator.Send(new GetCompanyByIdQuery(id), ct);
-            logger.LogInformation("Stub: Get company {Id}", id);
+            var company = await mediator.Send(new QueryCompanyById(id), ct);
+            logger.LogInformation("Get company {Id}", id);
 
-            var stub = new CompanyDto(
-                id,
-                "DevTools Ltd",
-                Guid.NewGuid(),
-                "Пётр Петров",
-                new List<Guid> { Guid.NewGuid() },
-                new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
-            );
-
-            return Results.Ok(stub);
+            return Results.Ok(mapper.Map<DTOs.CompanyDto>(company));
         }
         catch (KeyNotFoundException)
         {
@@ -101,6 +85,7 @@ public static class CompanyEndpoints
         ClaimsPrincipal principal,
         IMediator mediator,
         ILoggerFactory lf,
+        IMapper mapper,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Companies");
@@ -111,20 +96,12 @@ public static class CompanyEndpoints
 
         try
         {
-            // TODO: mediator.Send(new CreateCompanyCommand(req), ct);
+            var company = await mediator.Send(new CreateCompanyCommand(req.Name, req.OwnerId), ct);
             logger.LogInformation("Stub: Create company {Name}", req.Name);
+            
 
-            var stubCompany = new CompanyDto(
-                Guid.NewGuid(),
-                req.Name,
-                req.OwnerId,
-                "Stub Owner",
-                new List<Guid>(),
-                new List<Guid>()
-            );
-
-            var response = new CompanyCreateResponse(stubCompany);
-            return Results.Created($"/api/companies/{stubCompany.Id}", response);
+            var response = new CompanyCreateResponse(mapper.Map<DTOs.CompanyDto>(company));
+            return Results.Created($"/api/companies/{response.Company.Id}", response);
         }
         catch (InvalidOperationException ex)
         {
@@ -147,6 +124,7 @@ public static class CompanyEndpoints
         ClaimsPrincipal principal,
         IMediator mediator,
         ILoggerFactory lf,
+        IMapper mapper,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Companies");
@@ -156,19 +134,10 @@ public static class CompanyEndpoints
 
         try
         {
-            // TODO: mediator.Send(new UpdateCompanyCommand(id, req), ct);
+            var company = await mediator.Send(new UpdateCompanyCommand(id, req.Name), ct);
             logger.LogInformation("Stub: Update company {Id}", id);
 
-            var updated = new CompanyDto(
-                id,
-                req.Name ?? "Updated Company",
-                Guid.Parse(uid),
-                "Updated Owner",
-                new List<Guid> { Guid.NewGuid() },
-                new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
-            );
-
-            return Results.Ok(updated);
+            return Results.Ok(mapper.Map<DTOs.CompanyDto>(company));
         }
         catch (KeyNotFoundException)
         {
@@ -188,13 +157,14 @@ public static class CompanyEndpoints
         Guid id,
         IMediator mediator,
         ILoggerFactory lf,
+        IMapper mapper,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Companies");
 
         try
         {
-            // TODO: mediator.Send(new DeleteCompanyCommand(id), ct);
+            await mediator.Send(new DeleteCompanyCommand(id), ct);
             logger.LogInformation("Stub: Delete company {Id}", id);
             return Results.NoContent();
         }
