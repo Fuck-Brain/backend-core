@@ -1,6 +1,9 @@
+using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
+using ProfileCore.Domain.Aggregate;
 
 namespace ProfileCore.UI.Api.Definitions.Mapping
 {
