@@ -4,4 +4,4 @@ using ProfileCore.Application.Dtos;
 
 namespace ProfileCore.Application.Commands.User;
 
-public record UpdateUserProfileCommand(Guid Id, UserProfileDto NewProfile) : IRequest<ApiResult>;
+public record UpdateUserProfileCommand(Guid Id, UserProfileDto NewProfile) : IRequest;

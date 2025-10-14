@@ -1,21 +1,27 @@
+using AutoMapper;
 using MediatR;
 using ProfileCore.Application.Dtos;
 using ProfileCore.Application.Queries.Company;
+using ProfileCore.Domain.Exceptions;
+using ProfileCore.Domain.IRepository;
 
 namespace ProfileCore.Application.Handlers.Company;
 
-public class QueryAllCompaniesHandler : IRequestHandler<QueryAllCompanies, List<CompanyDto>>
+public class QueryAllCompaniesHandler(ICompanyRepository companyRepository, IMapper mapper) : IRequestHandler<QueryAllCompanies, List<CompanyDto>>
 {
-    public Task<List<CompanyDto>> Handle(QueryAllCompanies request, CancellationToken cancellationToken)
+    public async Task<List<CompanyDto>> Handle(QueryAllCompanies request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return mapper.Map<List<CompanyDto>>(await companyRepository.GetAllCompanyAsync());
     }
 }
 
-public class QueryCompanyByIdHandler : IRequestHandler<QueryCompanyById, CompanyDto>
+public class QueryCompanyByIdHandler(ICompanyRepository companyRepository, IMapper mapper) : IRequestHandler<QueryCompanyById, CompanyDto>
 {
-    public Task<CompanyDto> Handle(QueryCompanyById request, CancellationToken cancellationToken)
+    public async Task<CompanyDto> Handle(QueryCompanyById request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var company = await companyRepository.GetByIdAsync(request.Id);
+        if (company is null)
+            throw new NotFoundException($"Not found company with id: {request.Id}");
+        return mapper.Map<CompanyDto>(company);
     }
 }

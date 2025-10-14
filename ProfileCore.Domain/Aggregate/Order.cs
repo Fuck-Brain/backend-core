@@ -1,3 +1,4 @@
+using ProfileCore.Domain.DomainAbstract;
 using ProfileCore.Domain.Entity;
 using ProfileCore.Infrastructure;
 

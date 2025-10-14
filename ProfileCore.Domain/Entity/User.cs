@@ -15,7 +15,7 @@ namespace ProfileCore.Domain.Entity
         public string LastName { get; set; }
         public string FatherName { get; set; }
 
-        User(string email, string hashPassword, string firstName, string lastName, string fatherName)
+        public User(string email, string hashPassword, string firstName, string lastName, string fatherName)
         {
             this.Id = new Guid();
             this.Email = email;
@@ -23,9 +23,6 @@ namespace ProfileCore.Domain.Entity
             this.FirstName = firstName;
             this.LastName = lastName;
             this.FatherName = fatherName;
-
-
-            
         }
     }
 }
