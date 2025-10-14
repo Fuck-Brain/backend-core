@@ -1,9 +1,8 @@
 using MediatR;
 using Pepegov.MicroserviceFramework.ApiResults;
-using ProfileCore.Application.Commands;
-using ProfileCore.Application.Dtos;
+using ProfileCore.Application.Commands.User;
 
-namespace ProfileCore.Application.Handler;
+namespace ProfileCore.Application.Handlers.User;
 
 public class UpdateUserProfileHandler : IRequestHandler<UpdateUserProfileCommand, ApiResult>
 {
