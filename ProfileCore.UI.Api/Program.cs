@@ -1,10 +1,18 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Pepegov.MicroserviceFramework.Definition;
+using ProfileCore.Application.Services;
+using ProfileCore.Application.Services.Interfaces;
 using ProfileCore.UI.Api.EndPoints;
 using Serilog;
 using Serilog.Events;
+
+IdentityModelEventSource.ShowPII = true;
 
 //Configure logging
 Log.Logger = new LoggerConfiguration()
@@ -16,6 +24,38 @@ Log.Logger = new LoggerConfiguration()
 
 //Create builder
 var builder = WebApplication.CreateBuilder(args);
+
+//JWT
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        var jwt = builder.Configuration.GetSection("Jwt");
+        var issuer     = jwt["Issuer"];
+        var audience   = jwt["Audience"];
+        var secret     = jwt["SecretKey"];
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer           = true,
+            ValidateAudience         = true,
+            ValidateLifetime         = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer              = issuer,
+            ValidAudience            = audience,
+			IssuerSigningKey = string.IsNullOrWhiteSpace(secret)
+				? null
+				: new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 //Host logging  
 builder.Host.UseSerilog((ctx, services, cfg) => cfg
@@ -30,7 +70,32 @@ builder.Services.AddProblemDetails();
 	
 // Open API
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+	c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+
+	var scheme = new OpenApiSecurityScheme
+	{
+		Name = "Authorization",
+		Type = SecuritySchemeType.Http,     
+		Scheme = "bearer",                  
+		BearerFormat = "JWT",
+		In = ParameterLocation.Header,
+		Description = "Введите токен вида: Bearer {token}",
+		Reference = new OpenApiReference
+		{
+			Type = ReferenceType.SecurityScheme,
+			Id = "Bearer"
+		}
+	};
+
+	c.AddSecurityDefinition("Bearer", scheme);
+	c.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
+		{ scheme, Array.Empty<string>() }
+	});
+});
 
 //Add definitions
 var assembly = typeof(Program).Assembly;
@@ -55,6 +120,9 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local
 	app.UseSwaggerUI();
 }
 app.UseSerilogRequestLogging();
+
+app.UseAuthentication();
+app.UseAuthorization();
 	
 app.UseExceptionHandler(errorApp => 
 	errorApp.Run(async context =>

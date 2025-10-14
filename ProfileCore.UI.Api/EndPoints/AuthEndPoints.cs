@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApi;
-using ProfileCore.Application.Dtos;
-using ProfileCore.Application.Query;
+using ProfileCore.Application.Services.Interfaces;
 using ProfileCore.UI.Api.DTOs;
 
 namespace ProfileCore.UI.Api.EndPoints;
@@ -18,13 +18,15 @@ public static class AuthEndPoints
         group.MapPost("/register", Register);
         group.MapPost("/login", Login);
         group.MapPost("/refresh", Refresh);
-        group.MapGet("/me", Me).RequireAuthorization();
+        group.MapGet("/me", Me).RequireAuthorization();;
         return group;
     }
 
     // -------------------------------
     // POST /register
     // -------------------------------
+	[ProducesResponseType(201)]
+	[ProducesResponseType(400)]
 	private static async Task<IResult> Register(
 		RegisterRequest req,
 		ILoggerFactory lf,
@@ -32,7 +34,7 @@ public static class AuthEndPoints
 		CancellationToken ct)
 	{
 		var logger = lf.CreateLogger("Auth");
-		if (!MiniValidator.TryValidate(req, out var errors))
+		if (!TryValidateModel(req, out var errors))
 			return Results.ValidationProblem(errors);
 
 		try
@@ -76,14 +78,17 @@ public static class AuthEndPoints
     // -------------------------------
     // POST /login
     // -------------------------------
+	[ProducesResponseType(200)]
+	[ProducesResponseType(401)]
     private static async Task<IResult> Login(
         LoginRequest req,
         ILoggerFactory lf,
         IMediator mediator,
+		IJwtTokenService jwtService,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Auth");
-        if (!MiniValidator.TryValidate(req, out var errors))
+        if (!TryValidateModel(req, out var errors))
             return Results.ValidationProblem(errors);
 
         try
@@ -91,7 +96,14 @@ public static class AuthEndPoints
             // TODO: var token = await mediator.Send(new LoginCommand(req.Email, req.Password), ct);
 
             logger.LogInformation("Stub: User logged in {Email}", req.Email);
-            return Results.Ok(new AuthResponse("stub_access_token", "stub_refresh_token"));
+			
+			var userId = Guid.NewGuid();
+			string email = req.Email;
+			string role = "User";
+
+			string accessToken = jwtService.GenerateToken(userId, email, role);
+			
+            return Results.Ok(new AuthResponse(accessToken, "stub_refresh_token"));
         }
         catch (UnauthorizedAccessException)
         {
@@ -107,6 +119,8 @@ public static class AuthEndPoints
     // -------------------------------
     // POST /refresh
     // -------------------------------
+	[ProducesResponseType(200)]
+	[ProducesResponseType(401)]
     private static async Task<IResult> Refresh(
         RefreshRequest req,
         ILoggerFactory lf,
@@ -120,7 +134,7 @@ public static class AuthEndPoints
             // TODO: var newTokens = await mediator.Send(new RefreshTokenCommand(req.RefreshToken), ct);
 
             logger.LogInformation("Stub: Token refreshed for refreshToken={Token}", req.RefreshToken);
-            return Results.Ok(new AuthResponse("new_access_token", "new_refresh_token"));
+			return Results.Ok(new AuthResponse("new_access_token", "new_refresh_token"));
         }
         catch (SecurityTokenException)
         {
@@ -136,16 +150,18 @@ public static class AuthEndPoints
     // -------------------------------
     // GET /me
     // -------------------------------
+	[ProducesResponseType(200)]
+	[ProducesResponseType(401)]
     private static async Task<IResult> Me(
         ClaimsPrincipal principal,
         ILoggerFactory lf,
         IMediator mediator,
         CancellationToken ct)
-    {
+	{
         var logger = lf.CreateLogger("Auth");
-        var uid = principal.FindFirstValue("uid");
-        if (uid is null)
-            return Results.Unauthorized();
+		var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (uid is null) 
+			return Results.Unauthorized();
 
         try
         {
@@ -167,17 +183,19 @@ public static class AuthEndPoints
         }
     }
 
-    internal static class MiniValidator
-    {
-        public static bool TryValidate<T>(T model, out Dictionary<string, string[]> errors)
-        {
-            var ctx = new ValidationContext(model!);
-            var results = new List<ValidationResult>();
-            var ok = Validator.TryValidateObject(model!, ctx, results, true);
-            errors = results
-                .GroupBy(r => r.MemberNames.FirstOrDefault() ?? string.Empty)
-                .ToDictionary(g => g.Key, g => g.Select(r => r.ErrorMessage ?? "Invalid").ToArray());
-            return ok;
-        }
-    }
+	private static bool TryValidateModel<T>(T model, out Dictionary<string, string[]> errors)
+	{
+		var context = new ValidationContext(model);
+		var results = new List<ValidationResult>();
+		var isValid = Validator.TryValidateObject(model, context, results, true);
+
+		errors = results
+			.GroupBy(r => r.MemberNames.FirstOrDefault() ?? string.Empty)
+			.ToDictionary(
+				g => g.Key,
+				g => g.Select(r => r.ErrorMessage ?? "Invalid").ToArray()
+			);
+
+		return isValid;
+	}
 }

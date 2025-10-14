@@ -1,14 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 namespace ProfileCore.UI.Api.DTOs;
 
-public record RegisterRequest(
-	[Required, EmailAddress] string Email,
-	[Required, MinLength(6)] string Password,
-	[Required] string FirstName,
-	[Required] string LastName,
-	[Required] string FatherName,
-	string Role = "User"
-);
+public class RegisterRequest
+{
+	[Required, EmailAddress] public string Email { get; set; }
+	[Required, MinLength(6)] public string Password { get; set; }
+	[Required] public string FirstName { get; set; }
+	[Required] public string LastName { get; set; }
+	[Required] public string FatherName { get; set; }
+	public string Role { get; set; } = "User";
+}
 
 public record LoginRequest(
 	[Required, EmailAddress] string Email,
