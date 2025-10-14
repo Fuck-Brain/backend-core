@@ -15,6 +15,15 @@ namespace ProfileCore.Domain.Aggregate
         public List<Plugin> Plugins { get; set; }
         public List<Employee> Employees { get; set; }
 
+		public Company(Guid id, string name, Employee owner, List<Plugin> plugins, List<Employee> employees)
+		{
+			Id = id;
+			Name = name;
+			Owner = owner;
+			Plugins = plugins;
+			Employees = employees;
+		}
+		
         public Company(string name, Employee owner)
         {
             Id = new Guid();

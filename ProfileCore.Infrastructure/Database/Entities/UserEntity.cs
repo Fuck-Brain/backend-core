@@ -9,11 +9,11 @@ namespace ProfileCore.Infrastructure.Database.Entities
     public class UserEntity : IAuditable
     {
         public Guid Id { get; set; }
-        public string Email { get; set; }
-        public string HashPassword { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string FatherName { get; set; }
+        public string Email { get; set; } = String.Empty;
+        public string HashPassword { get; set; } = String.Empty;
+        public string FirstName { get; set; } = String.Empty;
+        public string LastName { get; set; } = String.Empty;
+        public string FatherName { get; set; } = String.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
@@ -25,9 +25,8 @@ namespace ProfileCore.Infrastructure.Database.Entities
             this.FirstName = firstName;
             this.LastName = lastName;
             this.FatherName = fatherName;
-
-
-            
         }
+		
+		public UserEntity() {}
     }
 }

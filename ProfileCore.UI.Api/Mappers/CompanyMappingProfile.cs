@@ -9,7 +9,13 @@ namespace ProfileCore.UI.Api.Mappers
 	{
 		public CompanyMappingProfile()
 		{
-			CreateMap<Company, CompanyDto>();
+			CreateMap<Company, CompanyDto>()
+				.ForCtorParam("Id", opt => opt.MapFrom(src => src.Id))
+				.ForCtorParam("Name", opt => opt.MapFrom(src => src.Name))
+				.ForCtorParam("OwnerId", opt => opt.MapFrom(src => src.Owner.Id))
+				.ForCtorParam("PluginIds", opt => opt.MapFrom(src => src.Plugins.Select(x => x.Id).ToList()))
+				.ForCtorParam("EmployeeIds", opt => opt.MapFrom(src => src.Employees.Select(x => x.Id).ToList()));
+
             
 			CreateMap<CompanyCreateRequest, CreateCompanyCommand>()
 				.ConstructUsing(src => new CreateCompanyCommand(src.Name, src.OwnerId));

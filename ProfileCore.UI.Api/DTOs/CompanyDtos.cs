@@ -4,7 +4,6 @@ public record CompanyDto(
 	Guid Id,
 	string Name,
 	Guid OwnerId,
-	string OwnerFullName,
 	List<Guid> PluginIds,
 	List<Guid> EmployeeIds
 );
