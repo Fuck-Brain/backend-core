@@ -17,9 +17,9 @@ namespace ProfileCore.Infrastructure.Database.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        UserEntity(string email, string hashPassword, string firstName, string lastName, string fatherName)
+        UserEntity(Guid id, string email, string hashPassword, string firstName, string lastName, string fatherName)
         {
-            this.Id = new Guid();
+            this.Id = id;
             this.Email = email;
             this.HashPassword = hashPassword;
             this.FirstName = firstName;

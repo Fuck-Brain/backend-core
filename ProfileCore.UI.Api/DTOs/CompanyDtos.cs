@@ -15,6 +15,7 @@ public record CompanyCreateRequest(
 );
 
 public record CompanyUpdateRequest(
+	Guid Id,
 	string Name
 );
 
