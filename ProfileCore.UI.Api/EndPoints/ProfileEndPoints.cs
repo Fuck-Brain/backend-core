@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ public static class ProfileEndpoints
     private static async Task<IResult> List(
         IMediator mediator,
         ILoggerFactory lf,
+        IMapper mapper,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Profiles");
