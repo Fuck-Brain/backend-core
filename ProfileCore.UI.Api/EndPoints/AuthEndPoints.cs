@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApi;
+using ProfileCore.Application.Commands.User;
 using ProfileCore.Application.Services.Interfaces;
 using ProfileCore.UI.Api.DTOs;
+using AutoMapper;
 
 namespace ProfileCore.UI.Api.EndPoints;
 
@@ -18,7 +19,7 @@ public static class AuthEndPoints
         group.MapPost("/register", Register);
         group.MapPost("/login", Login);
         group.MapPost("/refresh", Refresh);
-        group.MapGet("/me", Me).RequireAuthorization();;
+        //group.MapGet("/me", Me).RequireAuthorization();;
         return group;
     }
 
@@ -32,6 +33,7 @@ public static class AuthEndPoints
 		RegisterRequest req,
 		ILoggerFactory lf,
 		IMediator mediator,
+		IMapper mapper,
 		CancellationToken ct)
 	{
 		var logger = lf.CreateLogger("Auth");
@@ -40,26 +42,17 @@ public static class AuthEndPoints
 
 		try
 		{
-			// TODO: var response = await mediator.Send(new RegisterUserCommand(req.Email, req.Password, req.FirstName, req.LastName, req.FatherName, req.Role), ct);
-
-			// ---------- ЗАГЛУШКА ----------
-			var userStub = new UserDto(
-				Guid.NewGuid(),
-				req.Email,
-				req.FirstName,
-				req.LastName,
-				req.FatherName,
-				req.Role
-			);
-
-			var tokensStub = new AuthResponse(
-				"stub_access_token",
-				"stub_refresh_token"
-			);
-
-			var response = new RegisterResponse(userStub, tokensStub);
-			// --------------------------------
-
+			/*var tokenDto = await mediator.Send(
+				new RegisterUserCommand(
+					req.Email, 
+					req.FirstName, 
+					req.LastName, 
+					req.FatherName,
+					req.Password), 
+				ct);*/
+			var tokenDto = await mediator.Send(mapper.Map<RegisterUserCommand>(req), ct);
+			var response = mapper.Map<AuthResponse>(tokenDto);
+			
 			logger.LogInformation("Stub: User registered {Email}", req.Email);
 			return Results.Created("/api/profile/me", response);
 		}
@@ -87,6 +80,7 @@ public static class AuthEndPoints
         ILoggerFactory lf,
         IMediator mediator,
 		IJwtTokenService jwtService,
+		IMapper mapper,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Auth");
@@ -95,17 +89,12 @@ public static class AuthEndPoints
 
         try
         {
-            // TODO: var token = await mediator.Send(new LoginCommand(req.Email, req.Password), ct);
-
+            var tokenDto = await mediator.Send(mapper.Map<LoginUserCommand>(req), ct);
+			var response = mapper.Map<AuthResponse>(tokenDto);
+			
             logger.LogInformation("Stub: User logged in {Email}", req.Email);
 			
-			var userId = Guid.NewGuid();
-			string email = req.Email;
-			string role = "User";
-
-			string accessToken = jwtService.GenerateToken(userId, email, role);
-			
-            return Results.Ok(new AuthResponse(accessToken, "stub_refresh_token"));
+            return Results.Ok(response);
         }
         catch (UnauthorizedAccessException)
         {
@@ -124,19 +113,20 @@ public static class AuthEndPoints
 	[ProducesResponseType(200)]
 	[ProducesResponseType(401)]
     private static async Task<IResult> Refresh(
-        RefreshRequest req,
-        ILoggerFactory lf,
-        IMediator mediator,
-        CancellationToken ct)
+        RefreshRequest		req,
+        ILoggerFactory		lf,
+        IMediator			mediator,
+		IMapper				mapper,
+        CancellationToken	ct)
     {
         var logger = lf.CreateLogger("Auth");
 
         try
         {
-            // TODO: var newTokens = await mediator.Send(new RefreshTokenCommand(req.RefreshToken), ct);
+            var newTokens = await mediator.Send(mapper.Map<UserRefreshTokenCommand>(req), ct);
+			var response = mapper.Map<AuthResponse>(newTokens);
 
-            logger.LogInformation("Stub: Token refreshed for refreshToken={Token}", req.RefreshToken);
-			return Results.Ok(new AuthResponse("new_access_token", "new_refresh_token"));
+			return Results.Ok(response);
         }
         catch (SecurityTokenException)
         {
@@ -149,7 +139,7 @@ public static class AuthEndPoints
         }
     }
 
-    // -------------------------------
+    /*// -------------------------------
     // GET /me
     // -------------------------------
 	[Authorize]
@@ -170,7 +160,7 @@ public static class AuthEndPoints
         {
             var userId = Guid.Parse(uid);
 
-            // TODO: var profile = await mediator.Send(new GetUserProfileQuery(userId), ct);
+            var profile = await mediator.Send(new GetUserProfileQuery(userId), ct);
 
             logger.LogInformation("Stub: Fetched profile for {UserId}", userId);
             return Results.Ok(new
@@ -184,7 +174,7 @@ public static class AuthEndPoints
             logger.LogError(ex, "Failed to get profile for user {Uid}", uid);
             return Results.Problem("Internal error");
         }
-    }
+    }*/
 
 	private static bool TryValidateModel<T>(T model, out Dictionary<string, string[]> errors)
 	{

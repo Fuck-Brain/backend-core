@@ -20,9 +20,7 @@ public record AuthResponse(
 	string RefreshToken
 );
 
-public record RefreshRequest(string RefreshToken);
-
-public record RegisterResponse(
-	UserDto User,
-	AuthResponse Tokens
+public record RefreshRequest(
+	Guid	UserId,
+	string	RefreshToken
 );
