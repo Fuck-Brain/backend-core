@@ -25,6 +25,7 @@ public static class AuthEndPoints
     // -------------------------------
     // POST /register
     // -------------------------------
+	[AllowAnonymous]
 	[ProducesResponseType(201)]
 	[ProducesResponseType(400)]
 	private static async Task<IResult> Register(
@@ -78,6 +79,7 @@ public static class AuthEndPoints
     // -------------------------------
     // POST /login
     // -------------------------------
+	[AllowAnonymous]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(401)]
     private static async Task<IResult> Login(
@@ -150,6 +152,7 @@ public static class AuthEndPoints
     // -------------------------------
     // GET /me
     // -------------------------------
+	[Authorize]
 	[ProducesResponseType(200)]
 	[ProducesResponseType(401)]
     private static async Task<IResult> Me(

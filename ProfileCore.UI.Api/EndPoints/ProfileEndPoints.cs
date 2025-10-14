@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProfileCore.UI.Api.DTOs;
 
 namespace ProfileCore.UI.Api.EndPoints;
@@ -21,6 +23,8 @@ public static class ProfileEndpoints
     // -------------------------------
     // GET /profiles
     // -------------------------------
+	[Authorize]
+	[ProducesResponseType(200)]
     private static async Task<IResult> List(
         IMediator mediator,
         ILoggerFactory lf,
@@ -58,6 +62,9 @@ public static class ProfileEndpoints
     // -------------------------------
     // GET /profiles/me
     // -------------------------------
+	[Authorize]
+	[ProducesResponseType(200)]
+	[ProducesResponseType(401)]
     private static async Task<IResult> GetMe(
         ClaimsPrincipal principal,
         IMediator mediator,
@@ -94,6 +101,9 @@ public static class ProfileEndpoints
         }
     }
 
+	[Authorize]
+	[ProducesResponseType(200)]
+	[ProducesResponseType(401)]
     // -------------------------------
     // PUT /profiles/me
     // -------------------------------
@@ -134,6 +144,9 @@ public static class ProfileEndpoints
         }
     }
 
+	[Authorize]
+	[ProducesResponseType(200)]
+	[ProducesResponseType(404)]
     // -------------------------------
     // GET /profiles/{id}
     // -------------------------------
@@ -173,6 +186,9 @@ public static class ProfileEndpoints
         }
     }
 
+	[Authorize]
+	[ProducesResponseType(201)]
+	[ProducesResponseType(409)]
     // -------------------------------
     // POST /profiles
     // -------------------------------
@@ -214,6 +230,9 @@ public static class ProfileEndpoints
         }
     }
 
+	[Authorize]
+	[ProducesResponseType(204)]
+	[ProducesResponseType(404)]
     // -------------------------------
     // DELETE /profiles/{id}
     // -------------------------------
