@@ -3,7 +3,6 @@ using MassTransit;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
 using Pepegov.MicroserviceFramework.Exceptions;
-using ProfileCore.Application.Consumers;
 using Template.Net.Microservice.ThreeTier.PL.Definitions.MassTransit;
 
 namespace ProfileCore.UI.Api.Definitions.MassTransit
@@ -24,7 +23,7 @@ namespace ProfileCore.UI.Api.Definitions.MassTransit
                 x.SetKebabCaseEndpointNameFormatter();
                 x.SetInMemorySagaRepositoryProvider();
 
-                var assembly = typeof(OrderCreateCommandConsumer).Assembly;
+                /*var assembly = typeof(OrderCreateCommandConsumer).Assembly;
                 var setting = definitionContext.Configuration.GetSection("RabbitMQ").Get<MassTransitOption>();
                 if (setting is null)
                 {
@@ -46,7 +45,7 @@ namespace ProfileCore.UI.Api.Definitions.MassTransit
                     });
 
                     cfg.ConfigureEndpoints(context);
-                });
+                });*/
             });
 
             return base.ConfigureServicesAsync(definitionContext);

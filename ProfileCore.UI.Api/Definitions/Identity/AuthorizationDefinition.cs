@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿/*using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -113,4 +113,4 @@ namespace ProfileCore.UI.Api.Definitions.Identity
             return base.ConfigureApplicationAsync(context);
         }
     }
-}
+}*/

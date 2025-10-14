@@ -22,6 +22,14 @@
       <PackageReference Include="Pepegov.MicroserviceFramework.ApiResults" Version="1.0.7" />
       <PackageReference Include="Pepegov.UnitOfWork" Version="3.2.0" />
       <PackageReference Include="Pepegov.UnitOfWork.EntityFramework" Version="1.4.0" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Consumers\" />
+      <Folder Include="Dtos\Mapping\" />
+      <Folder Include="Handler\" />
+      <Folder Include="Query\" />
     </ItemGroup>
 
 </Project>

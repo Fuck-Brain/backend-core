@@ -1,59 +1,147 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
+using Pepegov.MicroserviceFramework.Definition;
+using ProfileCore.Application.Services;
+using ProfileCore.Application.Services.Interfaces;
+using ProfileCore.UI.Api.EndPoints;
 using Serilog;
 using Serilog.Events;
 
-try
-{
-    //Configure logging
-    Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Debug()
-        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-        .Enrich.FromLogContext()
-        .WriteTo.Console()
-        .CreateLogger();
+IdentityModelEventSource.ShowPII = true;
 
-    //Create builder
-    var builder = WebApplication.CreateBuilder(args);
+//Configure logging
+Log.Logger = new LoggerConfiguration()
+	.MinimumLevel.Debug()
+	.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+	.Enrich.FromLogContext()
+	.WriteTo.Console()
+	.CreateLogger();
 
-    //Host logging  
-    builder.Host.UseSerilog((context, configuration) =>
-        configuration.ReadFrom.Configuration(context.Configuration));
+//Create builder
+var builder = WebApplication.CreateBuilder(args);
 
-    //Add definitions
-    var assembly = typeof(Program).Assembly;
-    await builder.AddApplicationDefinitions(assembly);
-
-    //Create web application
-    var app = builder.Build();
-
-    //Use definitions
-    await app.UseApplicationDefinitions();
-
-    //Use logging
-    if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
+//JWT
+builder.Services
+    .AddAuthentication(options =>
     {
-        IdentityModelEventSource.ShowPII = true;
-    }
-    app.UseSerilogRequestLogging();
-
-    //Run app
-    await app.RunAsync();
-
-    return 0;
-}
-catch (Exception ex)
-{
-    var type = ex.GetType().Name;
-    if (type.Equals("HostAbortedException", StringComparison.Ordinal))
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
     {
-        throw;
-    }
+        var jwt = builder.Configuration.GetSection("Jwt");
+        var issuer     = jwt["Issuer"];
+        var audience   = jwt["Audience"];
+        var secret     = jwt["SecretKey"];
 
-    Log.Fatal(ex, "Unhandled exception");
-    return 1;
-}
-finally
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer           = true,
+            ValidateAudience         = true,
+            ValidateLifetime         = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer              = issuer,
+            ValidAudience            = audience,
+			IssuerSigningKey = string.IsNullOrWhiteSpace(secret)
+				? null
+				: new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+//Host logging  
+builder.Host.UseSerilog((ctx, services, cfg) => cfg
+	.ReadFrom.Configuration(ctx.Configuration)
+	.ReadFrom.Services(services)
+	.Enrich.FromLogContext()
+	.WriteTo.Console()
+);
+	
+// Controllers
+builder.Services.AddProblemDetails();
+	
+// Open API
+builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
 {
-    await Log.CloseAndFlushAsync();
+	c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+
+	var scheme = new OpenApiSecurityScheme
+	{
+		Name = "Authorization",
+		Type = SecuritySchemeType.Http,     
+		Scheme = "bearer",                  
+		BearerFormat = "JWT",
+		In = ParameterLocation.Header,
+		Description = "Введите токен вида: Bearer {token}",
+		Reference = new OpenApiReference
+		{
+			Type = ReferenceType.SecurityScheme,
+			Id = "Bearer"
+		}
+	};
+
+	c.AddSecurityDefinition("Bearer", scheme);
+	c.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
+		{ scheme, Array.Empty<string>() }
+	});
+});
+
+//Add definitions
+var assembly = typeof(Program).Assembly;
+await builder.AddApplicationDefinitions(assembly);
+	
+// Health checks
+builder.Services.AddHealthChecks();
+	
+//Create web application
+var app = builder.Build();
+	
+app.UseExceptionHandler();
+	
+//Use definitions
+await app.UseApplicationDefinitions();
+
+//Use logging
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
+{
+	IdentityModelEventSource.ShowPII = true;
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
+app.UseSerilogRequestLogging();
+
+app.UseAuthentication();
+app.UseAuthorization();
+	
+app.UseExceptionHandler(errorApp => 
+	errorApp.Run(async context =>
+	{
+		await Results.Problem().ExecuteAsync(context);
+	}));
+
+var api = app.MapGroup("/api");
+
+api.MapGroup("/auth").MapAuthEndpoints();
+api.MapGroup("/profile").MapProfileEndpoints();
+api.MapGroup("/companies").MapCompanyEndpoints();
+
+app.MapHealthChecks("/health");
+app.MapGet("/throw", (_) => throw new Exception("Test exception"));
+
+//Run app
+await app.RunAsync();
+
+await Log.CloseAndFlushAsync();
+	
+return 0;

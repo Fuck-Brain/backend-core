@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
@@ -132,4 +132,4 @@ namespace ProfileCore.UI.Api.Definitions.Swagger
             return base.ConfigureServicesAsync(context);
         }
     }
-}
+}*/
