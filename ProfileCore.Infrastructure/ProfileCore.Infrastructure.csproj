@@ -7,8 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="15.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ProfileCore.Domain\ProfileCore.Domain.csproj" />
     </ItemGroup>
 
 </Project>

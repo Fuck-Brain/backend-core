@@ -13,7 +13,7 @@ namespace ProfileCore.Infrastructure.Database
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<EmployeeEntity> Employees { get; set; }
         public DbSet<CompanyEntity> Companies { get; set; }
-        public DbSet<PluginEntity> plugins { get; set; }
+        public DbSet<PluginEntity> Plugins { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
