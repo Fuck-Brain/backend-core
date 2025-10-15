@@ -13,7 +13,10 @@ namespace ProfileCore.Infrastructure.Database.Mappers
     {
         public EmployeeMappingProfile()
         {
-            CreateMap<EmployeeEntity, Employee>().ReverseMap();
+			CreateMap<EmployeeEntity, Employee>()
+				.ForCtorParam("user", opt => opt.MapFrom(src => src.UserEntity))
+				.ReverseMap()
+				.ForCtorParam("user", opt => opt.MapFrom(src => src.User));
         }
     }
 }
