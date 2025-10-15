@@ -4,6 +4,7 @@ using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
 using ProfileCore.Domain.Aggregate;
+using ProfileCore.Infrastructure.Database.Mappers;
 
 namespace ProfileCore.UI.Api.Definitions.Mapping
 {
@@ -15,8 +16,10 @@ namespace ProfileCore.UI.Api.Definitions.Mapping
         /// <inheritdoc />
         public override Task ConfigureServicesAsync(IDefinitionServiceContext context)
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            context.ServiceCollection.AddAutoMapper(assemblies);
+			context.ServiceCollection
+				   .AddAutoMapper(typeof(Program).Assembly)
+				   .AddInfrastructureMappings();
+			
             return base.ConfigureServicesAsync(context);
         }
 
