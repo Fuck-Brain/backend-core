@@ -14,7 +14,7 @@ namespace ProfileCore.Infrastructure.Database
         public async Task SeedAsync(CancellationToken cancellationToken = default)
         {
             //TODO if you are not using migrations, then uncomment this line
-            //await _context!.Database.EnsureCreatedAsync(cancellationToken);
+            // await _context!.Database.EnsureCreatedAsync(cancellationToken);
             var pending = await _context.Database.GetPendingMigrationsAsync(cancellationToken: cancellationToken);
             if (pending.Any())
             {
