@@ -24,14 +24,14 @@ public class LoginUserHandler(IUserRepository userRepository, IJwtTokenService j
     }
 }
 
-public class RegisterUserHandler(IUserRepository userRepository) : IRequestHandler<RegisterUserCommand, TokenDto>
+public class RegisterUserHandler(IUserRepository userRepository, IJwtTokenService jwtTokenService) : IRequestHandler<RegisterUserCommand, TokenDto>
 {
     public async Task<TokenDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         var user = new Domain.Entity.User(request.Email, request.Password, request.FirstName, request.LastName, request.FatherName); // TODO: password hash + salt
         await userRepository.AddAsync(user);
-        
-        return new TokenDto("token", "token"); // TODO: token
+        var token = jwtTokenService.GenerateToken(user.Id, user.Email, "User");
+        return new TokenDto(token, "stub_refresh_token"); // TODO: token
     }
 }
 
