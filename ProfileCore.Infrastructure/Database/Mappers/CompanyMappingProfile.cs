@@ -14,7 +14,14 @@ namespace ProfileCore.Infrastructure.Database.Mappers
     {
         public CompanyMappingProfile() 
         {
-            CreateMap<CompanyEntity, Company>().ReverseMap();
-        }
+			CreateMap<CompanyEntity, Company>()
+				.ForMember(d => d.Owner, o => o.MapFrom(s => s.Owner))
+				.ForMember(d => d.Employees, o => o.MapFrom(s => s.Employees))
+				.ForMember(d => d.Plugins, o => o.MapFrom(s => s.Plugins))
+				.ReverseMap()
+				.ForMember(d => d.Owner, o => o.MapFrom(s => s.Owner))
+				.ForMember(d => d.Employees, o => o.MapFrom(s => s.Employees))
+				.ForMember(d => d.Plugins, o => o.MapFrom(s => s.Plugins));
+		}
     }
 }

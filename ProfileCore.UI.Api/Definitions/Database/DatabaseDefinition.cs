@@ -19,7 +19,7 @@ namespace ProfileCore.UI.Api.Definitions.Database
         {
             string migrationsAssembly = typeof(ApplicationDbContext).GetTypeInfo().Assembly.GetName().Name!;
             string connectionString = context.Configuration.GetConnectionString("DefaultConnection")
-                                      ?? $"Server=localhost;Port=5432;User Id=postgres;Password=password;Database={AppData.ServiceName}";
+                                      ?? $"Server=localhost;Port=5432;User Id=postgres;Password=password;Database=Microservice";
 
             context.ServiceCollection.AddDbContext<ApplicationDbContext>(options =>
                 //TODO: change your db provider 
@@ -30,6 +30,7 @@ namespace ProfileCore.UI.Api.Definitions.Database
             context.ServiceCollection.AddScoped<ICompanyRepository, CompanyPostgreRepository>();
             context.ServiceCollection.AddScoped<IPluginRepository, PluginPostgreRepository>();
 
+			context.ServiceCollection.AddScoped<DatabaseInitializer>();
 
             return base.ConfigureServicesAsync(context);
         }

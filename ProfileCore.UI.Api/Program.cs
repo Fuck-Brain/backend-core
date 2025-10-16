@@ -1,13 +1,12 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
-using Pepegov.MicroserviceFramework.Definition;
 using ProfileCore.Application.Services;
 using ProfileCore.Application.Services.Interfaces;
+using ProfileCore.Infrastructure.Database;
 using ProfileCore.UI.Api.EndPoints;
 using Serilog;
 using Serilog.Events;
@@ -106,6 +105,12 @@ builder.Services.AddHealthChecks();
 	
 //Create web application
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+	var seeder = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+	await seeder.SeedAsync(); 
+}
 	
 app.UseExceptionHandler();
 	

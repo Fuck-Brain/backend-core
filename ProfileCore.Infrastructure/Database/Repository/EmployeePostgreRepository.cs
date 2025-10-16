@@ -52,7 +52,7 @@ namespace ProfileCore.Infrastructure.Database.Repository
 
         public async Task<Employee?> GetByMailAsync(string mail)
         {
-            var entity = await _context.Employees.FirstOrDefaultAsync(x => x.UserEntity.Email == mail);
+            var entity = await _context.Employees.FirstOrDefaultAsync(x => x.User.Email == mail);
             return _mapper.Map<Employee>(entity);
         }
 

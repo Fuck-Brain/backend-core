@@ -4,9 +4,9 @@ namespace ProfileCore.Infrastructure.Database
 {
     public class DatabaseInitializer
     {
-        private readonly DbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DatabaseInitializer(DbContext context)
+        public DatabaseInitializer(ApplicationDbContext context)
         {
             _context = context;
         }

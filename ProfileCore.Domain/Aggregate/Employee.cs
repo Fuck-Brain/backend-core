@@ -13,6 +13,8 @@ namespace ProfileCore.Domain.Aggregate
         public User User { get; set; }
         public bool IsOwner { get; set; }
         public bool IsAdmin { get; set; }
+		
+		public Employee() {}
 
         public Employee(User user, bool isOwner = false, bool isAdmin = false)
         {

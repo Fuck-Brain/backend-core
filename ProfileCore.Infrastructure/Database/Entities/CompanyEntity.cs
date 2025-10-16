@@ -16,9 +16,11 @@ namespace ProfileCore.Infrastructure.Database.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt {  get; set; }
 
-        public CompanyEntity(string name, EmployeeEntity owner)
+		public CompanyEntity() {}
+
+		public CompanyEntity(string name, EmployeeEntity owner)
         {
-            Id = new Guid();
+            Id = Guid.NewGuid();
             Name = name;
             Owner = owner;
             Plugins = new List<PluginEntity>();

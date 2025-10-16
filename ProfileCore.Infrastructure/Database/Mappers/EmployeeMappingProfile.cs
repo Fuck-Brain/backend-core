@@ -14,7 +14,7 @@ namespace ProfileCore.Infrastructure.Database.Mappers
         public EmployeeMappingProfile()
         {
 			CreateMap<EmployeeEntity, Employee>()
-				.ForCtorParam("user", opt => opt.MapFrom(src => src.UserEntity))
+				.ForCtorParam("user", opt => opt.MapFrom(src => src.User))
 				.ReverseMap()
 				.ForCtorParam("user", opt => opt.MapFrom(src => src.User));
         }
