@@ -36,8 +36,10 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .WithMany(u => u.UserWorks)
             .HasForeignKey(e => e.UserId);
         
+        builder.Property(x => x.Role).HasConversion<int>().IsRequired();
+
         builder.HasIndex(x => x.CompanyId)
-            .HasFilter("[Role] = 1")   // 1 == EmployeeRole.Owner
+            .HasFilter("\"Role\" = 1")   // 1 == EmployeeRole.Owner
             .IsUnique();
     }
 }

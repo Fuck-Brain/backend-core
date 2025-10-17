@@ -2,10 +2,7 @@ namespace ProfileCore.UI.Api.DTOs;
 
 public record CompanyDto(
 	Guid Id,
-	string Name,
-	Guid OwnerId,
-	List<Guid> PluginIds,
-	List<Guid> EmployeeIds
+	string Name
 );
 
 public record CompanyCreateRequest(
