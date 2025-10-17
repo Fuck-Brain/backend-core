@@ -35,6 +35,10 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.HasOne(e => e.User)
             .WithMany(u => u.UserWorks)
             .HasForeignKey(e => e.UserId);
+        
+        builder.HasIndex(x => x.CompanyId)
+            .HasFilter("[Role] = 1")   // 1 == EmployeeRole.Owner
+            .IsUnique();
     }
 }
 

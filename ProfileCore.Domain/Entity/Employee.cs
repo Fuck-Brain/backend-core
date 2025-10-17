@@ -49,6 +49,16 @@ namespace ProfileCore.Domain.Entity
                 role
             );
         }
+        
+        public static Employee Create(Guid user, Guid company, EmployeeRole role)
+        {
+            return new Employee(
+                Guid.NewGuid(),
+                user,
+                company,
+                role
+            );
+        }
 
         /*public Employee Build(Guid id, User user, EmployeeRole role)
         {

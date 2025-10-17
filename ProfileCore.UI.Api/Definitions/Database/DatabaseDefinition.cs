@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
-using ProfileCore.Application;
-using ProfileCore.Domain.IRepository;
 using ProfileCore.Infrastructure.Database;
 
 namespace ProfileCore.UI.Api.Definitions.Database

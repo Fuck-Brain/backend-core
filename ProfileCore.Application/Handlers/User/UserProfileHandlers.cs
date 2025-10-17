@@ -1,27 +1,29 @@
-using System.Net;
 using MediatR;
-using Pepegov.MicroserviceFramework.ApiResults;
+using Microsoft.EntityFrameworkCore;
 using ProfileCore.Application.Commands.User;
 using ProfileCore.Domain.Exceptions;
-using ProfileCore.Domain.IRepository;
+using ProfileCore.Infrastructure.Database;
 
 namespace ProfileCore.Application.Handlers.User;
 
-public class UpdateUserProfileHandler(IUserRepository userRepository) : IRequestHandler<UpdateUserProfileCommand>
+public class UpdateUserProfileHandler(ApplicationDbContext dbContext) : IRequestHandler<UpdateUserProfileCommand>
 {
     public async Task Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.Id);
-        if (user is null) 
+        var userProfile = await dbContext.UserProfiles.FirstOrDefaultAsync(up => up.Id == request.Id, cancellationToken);
+        if (userProfile is null) 
             throw new NotFoundException("Not found user with id: " + request.Id);
+        
         var newProfile = request.NewProfile;
         if (newProfile.Name is not null)
-            user.FirstName = newProfile.Name;
+            userProfile.UpdateName(newProfile.Name);
         if (newProfile.Surname is not null)
-            user.LastName = newProfile.Surname;
+            userProfile.UpdateSurname(newProfile.Surname);
         if (newProfile.FathersName is not null)
-            user.FatherName = newProfile.FathersName;
+            userProfile.UpdateFatherName(newProfile.FathersName);
+        if (newProfile.Bio is not null)
+            userProfile.UpdateBio(newProfile.Bio);
 
-        await userRepository.UpdateAsync(user);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
