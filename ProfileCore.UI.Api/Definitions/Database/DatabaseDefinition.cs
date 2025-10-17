@@ -5,7 +5,6 @@ using Pepegov.MicroserviceFramework.Definition.Context;
 using ProfileCore.Application;
 using ProfileCore.Domain.IRepository;
 using ProfileCore.Infrastructure.Database;
-using ProfileCore.Infrastructure.Database.Repository;
 
 namespace ProfileCore.UI.Api.Definitions.Database
 {
@@ -25,10 +24,6 @@ namespace ProfileCore.UI.Api.Definitions.Database
                 //TODO: change your db provider 
                 options.UseNpgsql(connectionString,
                     b => b.MigrationsAssembly(migrationsAssembly)));
-            context.ServiceCollection.AddScoped<IUserRepository, UserPostgreRepository>();
-            context.ServiceCollection.AddScoped<IEmployeeRepository, EmployeePostgreRepository>();
-            context.ServiceCollection.AddScoped<ICompanyRepository, CompanyPostgreRepository>();
-            context.ServiceCollection.AddScoped<IPluginRepository, PluginPostgreRepository>();
 
 			context.ServiceCollection.AddScoped<DatabaseInitializer>();
 

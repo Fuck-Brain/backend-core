@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ProfileCore.Domain\ProfileCore.Domain.csproj" />
+      <ProjectReference Include="..\ProfileCore.Infrastructure\ProfileCore.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
