@@ -9,7 +9,9 @@ namespace ProfileCore.UI.Api.Mappers
 	{
 		public CompanyMappingProfile()
 		{
-			CreateMap<Company, CompanyDto>();
+			CreateMap<
+				ProfileCore.Application.Dtos.CompanyDto, 
+				ProfileCore.UI.Api.DTOs.CompanyDto>();
             
 			CreateMap<CompanyCreateRequest, CreateCompanyCommand>()
 				.ConstructUsing(src => new CreateCompanyCommand(src.Name, src.OwnerId));

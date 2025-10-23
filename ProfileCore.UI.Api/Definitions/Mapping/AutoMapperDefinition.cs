@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Pepegov.MicroserviceFramework.AspNetCore.WebApplicationDefinition;
 using Pepegov.MicroserviceFramework.Definition;
 using Pepegov.MicroserviceFramework.Definition.Context;
+using ProfileCore.Application.Dtos.Mappers;
 using ProfileCore.Domain.Aggregate;
 
 namespace ProfileCore.UI.Api.Definitions.Mapping
@@ -15,8 +16,9 @@ namespace ProfileCore.UI.Api.Definitions.Mapping
         /// <inheritdoc />
         public override Task ConfigureServicesAsync(IDefinitionServiceContext context)
         {
-            context.ServiceCollection
-                .AddAutoMapper(typeof(Program).Assembly);
+			context.ServiceCollection
+				   .AddAutoMapper(typeof(Program).Assembly)
+				   .AddApplicationMappings();
 			
             return base.ConfigureServicesAsync(context);
         }

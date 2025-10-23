@@ -21,8 +21,8 @@ public class UpdateUserProfileHandler(ApplicationDbContext dbContext, IMapper ma
             userProfile.UpdateName(newProfile.Name);
         if (newProfile.Surname is not null)
             userProfile.UpdateSurname(newProfile.Surname);
-        if (newProfile.FathersName is not null)
-            userProfile.UpdateFatherName(newProfile.FathersName);
+        if (newProfile.FatherName is not null)
+            userProfile.UpdateFatherName(newProfile.FatherName);
         if (newProfile.Bio is not null)
             userProfile.UpdateBio(newProfile.Bio);
 

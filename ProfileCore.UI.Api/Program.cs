@@ -113,6 +113,7 @@ using (var scope = app.Services.CreateScope())
 }
 	
 app.UseExceptionHandler();
+app.UseStatusCodePages();
 	
 //Use definitions
 await app.UseApplicationDefinitions();
@@ -129,11 +130,11 @@ app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 	
-app.UseExceptionHandler(errorApp => 
+/*app.UseExceptionHandler(errorApp => 
 	errorApp.Run(async context =>
 	{
 		await Results.Problem().ExecuteAsync(context);
-	}));
+	}));*/
 
 var api = app.MapGroup("/api");
 
