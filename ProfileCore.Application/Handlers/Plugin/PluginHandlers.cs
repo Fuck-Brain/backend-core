@@ -22,6 +22,7 @@ public class AddCompanyPluginHandler(ApplicationDbContext dbContext) : IRequestH
         
         var connection = PluginConnection.Create(request.CompanyId, request.PluginId);
         await dbContext.PluginConnections.AddAsync(connection, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
 
@@ -34,6 +35,7 @@ public class DeleteCompanyPluginHandler(ApplicationDbContext dbContext) : IReque
         if (connection is null)
             throw new NotFoundException("Plugin is not connected to company");
         dbContext.PluginConnections.Remove(connection);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
 
@@ -43,6 +45,7 @@ public class AddPluginHandler(ApplicationDbContext dbContext, IMapper mapper) : 
     {
         var plugin = Domain.Entity.Plugin.Create(request.Name, request.Description);
         await dbContext.Plugins.AddAsync(plugin, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
         return mapper.Map<PluginDto>(plugin);
     }
 }
@@ -57,5 +60,6 @@ public class DeletePluginHandler(ApplicationDbContext dbContext) : IRequestHandl
             throw new NotFoundException("Plugin is not exists");
         
         dbContext.Plugins.Remove(plugin);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
