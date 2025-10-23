@@ -16,7 +16,7 @@ public class QueryCompanyPluginsHandler(ApplicationDbContext dbContext, IMapper 
             .AsNoTracking()
             .Include(c => c.PluginConnections).ThenInclude(pluginConnection => pluginConnection.Plugin)
             .Include(c => c.Employees)
-            .Where(c => c.Employees.Any(e => e.Id == request.UserId))
+            .Where(c => c.Employees.Any(e => e.UserId == request.UserId))
             .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
         
         if (company is null)
