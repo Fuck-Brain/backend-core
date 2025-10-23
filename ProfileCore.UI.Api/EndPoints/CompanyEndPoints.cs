@@ -13,11 +13,11 @@ public static class CompanyEndpoints
 {
     public static RouteGroupBuilder MapCompanyEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/", List);
-        group.MapGet("/{id:guid}", GetById);
-        group.MapPost("/", Create);
-        group.MapPut("/{id:guid}", Update);
-        group.MapDelete("/{id:guid}", Delete).RequireAuthorization("AdminOnly");
+        group.MapGet("/", List).RequireAuthorization();
+        group.MapGet("/{id:guid}", GetById).RequireAuthorization();
+        group.MapPost("/", Create).RequireAuthorization();
+        group.MapPut("/", Update).RequireAuthorization();
+        group.MapDelete("/{id:guid}", Delete).RequireAuthorization();
 
         return group;
     }
@@ -27,24 +27,20 @@ public static class CompanyEndpoints
     // -------------------------------
     private static async Task<IResult> List(
         IMediator mediator,
+		ClaimsPrincipal principal,
         ILoggerFactory lf,
         IMapper mapper,
         CancellationToken ct)
     {
-        var logger = lf.CreateLogger("Companies");
+		var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (uid is null)
+			return Results.Unauthorized();
+        //var logger = lf.CreateLogger("Companies");
 
-        try
-        {
-            var companies = await mediator.Send(new QueryAllCompanies(), ct);
-            logger.LogInformation("Stub: Get all companies");
+		var companies = await mediator.Send(new QueryAllUsersCompanies(uid), ct);
+		//logger.LogInformation("Stub: Get all companies");
 
-            return Results.Ok(mapper.Map<List<ProfileCore.UI.Api.DTOs.CompanyDto>>(companies));
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to get companies");
-            return Results.Problem("Internal error");
-        }
+		return Results.Ok(mapper.Map<List<ProfileCore.UI.Api.DTOs.CompanyDto>>(companies));
     }
 
     // -------------------------------
@@ -52,29 +48,21 @@ public static class CompanyEndpoints
     // -------------------------------
     private static async Task<IResult> GetById(
         Guid id,
+		ClaimsPrincipal principal,
         IMediator mediator,
         ILoggerFactory lf,
         IMapper mapper,
         CancellationToken ct)
     {
-        var logger = lf.CreateLogger("Companies");
+		var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (uid is null)
+			return Results.Unauthorized();
+		//var logger = lf.CreateLogger("Companies");
 
-        try
-        {
-            var company = await mediator.Send(new QueryCompanyById(id), ct);
-            logger.LogInformation("Get company {Id}", id);
+		var company = await mediator.Send(new QueryCompanyById(id, uid), ct);
+		//logger.LogInformation("Get company {Id}", id);
 
-            return Results.Ok(mapper.Map<DTOs.CompanyDto>(company));
-        }
-        catch (KeyNotFoundException)
-        {
-            return Results.NotFound();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to get company {Id}", id);
-            return Results.Problem("Internal error");
-        }
+		return Results.Ok(mapper.Map<DTOs.CompanyDto>(company));
     }
 
     // -------------------------------
@@ -90,64 +78,39 @@ public static class CompanyEndpoints
     {
         var logger = lf.CreateLogger("Companies");
 
-        var uid = principal.FindFirstValue("uid");
+        var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (uid is null)
             return Results.Unauthorized();
 
-        try
-        {
-            var company = await mediator.Send(new CreateCompanyCommand(req.Name, req.OwnerId), ct);
-            logger.LogInformation("Stub: Create company {Name}", req.Name);
+		var company = await mediator.Send(new CreateCompanyCommand(req.Name, new Guid(uid)), ct);
+		logger.LogInformation("Create company {Name}", req.Name);
             
 
-            var response = new CompanyCreateResponse(mapper.Map<DTOs.CompanyDto>(company));
-            return Results.Created($"/api/companies/{response.Company.Id}", response);
-        }
-        catch (InvalidOperationException ex)
-        {
-            logger.LogWarning(ex, "Company creation failed for {Name}", req.Name);
-            return Results.Conflict(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to create company");
-            return Results.Problem("Internal error");
-        }
+		var response = new CompanyCreateResponse(mapper.Map<DTOs.CompanyDto>(company));
+		return Results.Created($"/api/companies/{response.Company.Id}", response);   
     }
 
     // -------------------------------
     // PUT /companies/{id}
     // -------------------------------
     private static async Task<IResult> Update(
-        Guid id,
         CompanyUpdateRequest req,
-        ClaimsPrincipal principal,
+        //ClaimsPrincipal principal,
         IMediator mediator,
         ILoggerFactory lf,
         IMapper mapper,
         CancellationToken ct)
     {
         var logger = lf.CreateLogger("Companies");
-        var uid = principal.FindFirstValue("uid");
+        /*var uid = principal.FindFirstValue("uid");
         if (uid is null)
             return Results.Unauthorized();
+            */
 
-        try
-        {
-            var company = await mediator.Send(new UpdateCompanyCommand(id, req.Name), ct);
-            logger.LogInformation("Stub: Update company {Id}", id);
+		var company = await mediator.Send(new UpdateCompanyCommand(req.Id, req.Name), ct);
+		logger.LogInformation("Stub: Update company {Id}", req.Id);
 
-            return Results.Ok(mapper.Map<DTOs.CompanyDto>(company));
-        }
-        catch (KeyNotFoundException)
-        {
-            return Results.NotFound();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to update company {Id}", id);
-            return Results.Problem("Internal error");
-        }
+		return Results.Ok(mapper.Map<DTOs.CompanyDto>(company));
     }
 
     // -------------------------------
@@ -162,20 +125,8 @@ public static class CompanyEndpoints
     {
         var logger = lf.CreateLogger("Companies");
 
-        try
-        {
-            await mediator.Send(new DeleteCompanyCommand(id), ct);
-            logger.LogInformation("Stub: Delete company {Id}", id);
-            return Results.NoContent();
-        }
-        catch (KeyNotFoundException)
-        {
-            return Results.NotFound();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to delete company {Id}", id);
-            return Results.Problem("Internal error");
-        }
+		await mediator.Send(new DeleteCompanyCommand(id), ct);
+		logger.LogInformation("Stub: Delete company {Id}", id);
+		return Results.NoContent();
     }
 }

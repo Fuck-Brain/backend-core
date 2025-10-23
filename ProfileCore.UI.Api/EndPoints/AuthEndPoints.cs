@@ -9,6 +9,7 @@ using ProfileCore.Application.Commands.User;
 using ProfileCore.Application.Services.Interfaces;
 using ProfileCore.UI.Api.DTOs;
 using AutoMapper;
+using ProfileCore.Application.Queries.User;
 
 namespace ProfileCore.UI.Api.EndPoints;
 
@@ -40,32 +41,11 @@ public static class AuthEndPoints
 		if (!TryValidateModel(req, out var errors))
 			return Results.ValidationProblem(errors);
 
-		try
-		{
-			/*var tokenDto = await mediator.Send(
-				new RegisterUserCommand(
-					req.Email, 
-					req.FirstName, 
-					req.LastName, 
-					req.FatherName,
-					req.Password), 
-				ct);*/
-			var tokenDto = await mediator.Send(mapper.Map<RegisterUserCommand>(req), ct);
-			var response = mapper.Map<AuthResponse>(tokenDto);
+		var tokenDto = await mediator.Send(mapper.Map<RegisterUserCommand>(req), ct);
+		var response = mapper.Map<AuthResponse>(tokenDto);
 			
-			logger.LogInformation("Stub: User registered {Email}", req.Email);
-			return Results.Created("/api/profile/me", response);
-		}
-		catch (InvalidOperationException ex)
-		{
-			logger.LogWarning(ex, "Register failed for {Email}", req.Email);
-			return Results.Conflict(new { message = "User already exists" });
-		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "Unexpected error during registration");
-			return Results.Problem("Internal error");
-		}
+		logger.LogInformation("Stub: User registered {Email}", req.Email);
+		return Results.Created("/api/profile/me", response);
 	}
 
 
@@ -87,24 +67,12 @@ public static class AuthEndPoints
         if (!TryValidateModel(req, out var errors))
             return Results.ValidationProblem(errors);
 
-        try
-        {
-            var tokenDto = await mediator.Send(mapper.Map<LoginUserCommand>(req), ct);
-			var response = mapper.Map<AuthResponse>(tokenDto);
+		var tokenDto = await mediator.Send(mapper.Map<LoginUserCommand>(req), ct);
+		var response = mapper.Map<AuthResponse>(tokenDto);
 			
-            logger.LogInformation("Stub: User logged in {Email}", req.Email);
+		logger.LogInformation("Stub: User logged in {Email}", req.Email);
 			
-            return Results.Ok(response);
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Results.Unauthorized();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Login failed for {Email}", req.Email);
-            return Results.Problem("Internal error");
-        }
+		return Results.Ok(response);    
     }
 
     // -------------------------------
@@ -121,22 +89,10 @@ public static class AuthEndPoints
     {
         var logger = lf.CreateLogger("Auth");
 
-        try
-        {
-            var newTokens = await mediator.Send(mapper.Map<UserRefreshTokenCommand>(req), ct);
-			var response = mapper.Map<AuthResponse>(newTokens);
+		var newTokens = await mediator.Send(mapper.Map<UserRefreshTokenCommand>(req), ct);
+		var response = mapper.Map<AuthResponse>(newTokens);
 
-			return Results.Ok(response);
-        }
-        catch (SecurityTokenException)
-        {
-            return Results.Unauthorized();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Refresh token failed");
-            return Results.Problem("Internal error");
-        }
+		return Results.Ok(response);    
     }
 
     /*// -------------------------------
@@ -156,24 +112,16 @@ public static class AuthEndPoints
 		if (uid is null) 
 			return Results.Unauthorized();
 
-        try
-        {
-            var userId = Guid.Parse(uid);
+		var userId = Guid.Parse(uid);
 
-            var profile = await mediator.Send(new GetUserProfileQuery(userId), ct);
+		var profile = await mediator.Send(new QueryUserById(userId), ct);
 
-            logger.LogInformation("Stub: Fetched profile for {UserId}", userId);
-            return Results.Ok(new
-            {
-                user = new { Id = userId, Email = "stub@example.com", Role = "User" },
-                profile = new { FullName = "Stub User" }
-            });
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to get profile for user {Uid}", uid);
-            return Results.Problem("Internal error");
-        }
+		logger.LogInformation("Stub: Fetched profile for {Id}", userId);
+		return Results.Ok(new
+		{
+			user = new { Id = userId, Email = "stub@example.com", Role = "User" },
+			profile = new { FullName = "Stub User" }
+		});
     }*/
 
 	private static bool TryValidateModel<T>(T model, out Dictionary<string, string[]> errors)
