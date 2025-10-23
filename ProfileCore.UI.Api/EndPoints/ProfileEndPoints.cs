@@ -65,7 +65,7 @@ public static class ProfileEndpoints
             return Results.Unauthorized();
 
 		var userId = Guid.Parse(uid);
-		var updatedProfile = await mediator.Send(new UpdateUserProfileCommand(userId, mapper.Map<ProfileCore.Application.Dtos.UserProfileDto>(req)), ct);
+		var updatedProfile = await mediator.Send(new UpdateUserProfileCommand(userId, mapper.Map<ProfileCore.Application.Dtos.UserProfileUpdateDto>(req)), ct);
 		
 		return Results.Ok(mapper.Map<ProfileDto>(updatedProfile));
     }

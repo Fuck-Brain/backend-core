@@ -127,7 +127,7 @@ public static class PluginEndpoints
     // DELETE /plugins/company
     // -------------------------------
     private static async Task<IResult> RemovePluginFromCompany(
-        PluginCompanyRequest req,
+		[FromBody] PluginCompanyRequest req,
         ClaimsPrincipal principal,
         IMediator mediator,
         ILoggerFactory lf,

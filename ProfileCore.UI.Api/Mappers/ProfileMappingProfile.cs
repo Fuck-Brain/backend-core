@@ -11,6 +11,8 @@ namespace ProfileCore.UI.Api.Mappers
 		public ProfileMappingProfile()
 		{
 			CreateMap<UserProfileDto, ProfileDto>();
+			
+			CreateMap<ProfileUpdateRequest, UserProfileUpdateDto>();
 		}
 	}
 }
