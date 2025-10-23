@@ -1,15 +1,15 @@
 namespace ProfileCore.Infrastructure
 {
-    public interface IAuditable
+    public abstract class Auditable
     {
         /// <summary>
-        /// DateTime of creation. This value will never changed
+        /// DateTime of creation. This value will never change
         /// </summary>
-        DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         /// <summary>
         /// DateTime of last value update. Should be updated when entity data updated
         /// </summary>
-        DateTime? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

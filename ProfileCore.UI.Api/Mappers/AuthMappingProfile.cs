@@ -11,14 +11,13 @@ namespace ProfileCore.UI.Api.Mappers
         {
             CreateMap<RegisterRequest, RegisterUserCommand>()
                 .ConstructUsing(src => new RegisterUserCommand(
+                    src.Login,
                     src.Email,
-                    src.FirstName,
-                    src.LastName,
-                    src.FatherName,
                     src.Password));
 
             CreateMap<LoginRequest, LoginUserCommand>()
                 .ConstructUsing(src => new LoginUserCommand(
+                    src.Login,
                     src.Email,
                     src.Password));
 
