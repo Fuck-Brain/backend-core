@@ -17,6 +17,8 @@ public class UpdateUserProfileHandler(ApplicationDbContext dbContext, IMapper ma
             throw new NotFoundException("Not found user with id: " + request.Id);
         
         var newProfile = request.NewProfile;
+        if (newProfile.DisplayName != userProfile.DisplayName)
+            userProfile.UpdateDisplayName(newProfile.DisplayName);
         if (newProfile.Name is not null)
             userProfile.UpdateName(newProfile.Name);
         if (newProfile.Surname is not null)
