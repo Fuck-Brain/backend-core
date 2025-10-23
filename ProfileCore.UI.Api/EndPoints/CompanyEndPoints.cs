@@ -35,10 +35,8 @@ public static class CompanyEndpoints
 		var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
 		if (uid is null)
 			return Results.Unauthorized();
-        //var logger = lf.CreateLogger("Companies");
 
-		var companies = await mediator.Send(new QueryAllUsersCompanies(uid), ct);
-		//logger.LogInformation("Stub: Get all companies");
+		var companies = await mediator.Send(new QueryAllUsersCompanies(new Guid(uid)), ct);
 
 		return Results.Ok(mapper.Map<List<ProfileCore.UI.Api.DTOs.CompanyDto>>(companies));
     }
@@ -57,10 +55,8 @@ public static class CompanyEndpoints
 		var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
 		if (uid is null)
 			return Results.Unauthorized();
-		//var logger = lf.CreateLogger("Companies");
 
-		var company = await mediator.Send(new QueryCompanyById(id, uid), ct);
-		//logger.LogInformation("Get company {Id}", id);
+		var company = await mediator.Send(new QueryCompanyById(id, new Guid(uid)), ct);
 
 		return Results.Ok(mapper.Map<DTOs.CompanyDto>(company));
     }
@@ -76,15 +72,11 @@ public static class CompanyEndpoints
         IMapper mapper,
         CancellationToken ct)
     {
-        var logger = lf.CreateLogger("Companies");
-
         var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (uid is null)
             return Results.Unauthorized();
 
 		var company = await mediator.Send(new CreateCompanyCommand(req.Name, new Guid(uid)), ct);
-		logger.LogInformation("Create company {Name}", req.Name);
-            
 
 		var response = new CompanyCreateResponse(mapper.Map<DTOs.CompanyDto>(company));
 		return Results.Created($"/api/companies/{response.Company.Id}", response);   
@@ -95,20 +87,17 @@ public static class CompanyEndpoints
     // -------------------------------
     private static async Task<IResult> Update(
         CompanyUpdateRequest req,
-        //ClaimsPrincipal principal,
+        ClaimsPrincipal principal,
         IMediator mediator,
         ILoggerFactory lf,
         IMapper mapper,
         CancellationToken ct)
     {
-        var logger = lf.CreateLogger("Companies");
-        /*var uid = principal.FindFirstValue("uid");
+        var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (uid is null)
             return Results.Unauthorized();
-            */
 
 		var company = await mediator.Send(new UpdateCompanyCommand(req.Id, req.Name), ct);
-		logger.LogInformation("Stub: Update company {Id}", req.Id);
 
 		return Results.Ok(mapper.Map<DTOs.CompanyDto>(company));
     }
@@ -118,15 +107,18 @@ public static class CompanyEndpoints
     // -------------------------------
     private static async Task<IResult> Delete(
         Guid id,
+		ClaimsPrincipal principal,
         IMediator mediator,
         ILoggerFactory lf,
         IMapper mapper,
         CancellationToken ct)
     {
-        var logger = lf.CreateLogger("Companies");
+		var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (uid is null)
+			return Results.Unauthorized();
 
 		await mediator.Send(new DeleteCompanyCommand(id), ct);
-		logger.LogInformation("Stub: Delete company {Id}", id);
+		
 		return Results.NoContent();
     }
 }

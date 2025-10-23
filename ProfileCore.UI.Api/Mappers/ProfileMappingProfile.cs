@@ -2,6 +2,7 @@
 
 using AutoMapper;
 using ProfileCore.Application.Dtos;
+using ProfileCore.UI.Api.DTOs;
 
 namespace ProfileCore.UI.Api.Mappers
 {
@@ -9,7 +10,7 @@ namespace ProfileCore.UI.Api.Mappers
 	{
 		public ProfileMappingProfile()
 		{
-			/*CreateMap<UserProfileDto, User*/
+			CreateMap<UserProfileDto, ProfileDto>();
 		}
 	}
 }

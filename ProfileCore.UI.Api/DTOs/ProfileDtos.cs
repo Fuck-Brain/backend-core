@@ -1,7 +1,6 @@
 namespace ProfileCore.UI.Api.DTOs;
 
 public record ProfileDto(
-	Guid Id,
 	string? Name,
 	string? Surname,
 	string? FatherName,

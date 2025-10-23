@@ -33,7 +33,6 @@ public static class ProfileEndpoints
 		IMapper mapper,
         CancellationToken ct)
     {
-        //var logger = lf.CreateLogger("Profiles");
         var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (uid is null)
             return Results.Unauthorized();
@@ -41,7 +40,6 @@ public static class ProfileEndpoints
 		var userId = Guid.Parse(uid);
 		
 		var updatedProfile = await mediator.Send(new QueryUserById(userId), ct);
-		//logger.LogInformation("Stub: Get profile for user {Id}", userId);
 
 		var updatedProfileDto = mapper.Map<ProfileDto>(updatedProfile);
 
@@ -62,14 +60,13 @@ public static class ProfileEndpoints
 		IMapper mapper,
         CancellationToken ct)
     {
-        //var logger = lf.CreateLogger("Profiles");
         var uid = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (uid is null)
             return Results.Unauthorized();
 
 		var userId = Guid.Parse(uid);
 		var updatedProfile = await mediator.Send(new UpdateUserProfileCommand(userId, mapper.Map<ProfileCore.Application.Dtos.UserProfileDto>(req)), ct);
-		// TODO: DO
-		return Results.Ok(updatedProfile);
+		
+		return Results.Ok(mapper.Map<ProfileDto>(updatedProfile));
     }
 }

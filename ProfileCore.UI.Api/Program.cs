@@ -141,6 +141,8 @@ var api = app.MapGroup("/api");
 api.MapGroup("/auth").MapAuthEndpoints();
 api.MapGroup("/profile").MapProfileEndpoints();
 api.MapGroup("/companies").MapCompanyEndpoints();
+api.MapGroup("/plugins").MapPluginEndpoints();
+
 
 app.MapHealthChecks("/health");
 app.MapGet("/throw", (_) => throw new Exception("Test exception"));
