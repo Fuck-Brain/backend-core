@@ -1,14 +1,16 @@
+using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProfileCore.Application.Commands.User;
+using ProfileCore.Application.Dtos;
 using ProfileCore.Domain.Exceptions;
 using ProfileCore.Infrastructure.Database;
 
 namespace ProfileCore.Application.Handlers.User;
 
-public class UpdateUserProfileHandler(ApplicationDbContext dbContext) : IRequestHandler<UpdateUserProfileCommand>
+public class UpdateUserProfileHandler(ApplicationDbContext dbContext, IMapper mapper) : IRequestHandler<UpdateUserProfileCommand, UserProfileDto>
 {
-    public async Task Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
+    public async Task<UserProfileDto> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
     {
         var userProfile = await dbContext.UserProfiles.FirstOrDefaultAsync(up => up.Id == request.Id, cancellationToken);
         if (userProfile is null) 
@@ -25,5 +27,7 @@ public class UpdateUserProfileHandler(ApplicationDbContext dbContext) : IRequest
             userProfile.UpdateBio(newProfile.Bio);
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        
+        return mapper.Map<UserProfileDto>(userProfile);
     }
 }
